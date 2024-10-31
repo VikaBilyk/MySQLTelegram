@@ -27,8 +27,15 @@ CALL AddChat('Test Chat', FALSE, @AdminUserID, NULL);
 -- Перевіряємо, чи чат додано
 SELECT * FROM Chats WHERE ChatName = 'Test Chat';
 
+# -- Додаємо користувачів до чату
+# SET @ChatID = (SELECT ChatID FROM Chats WHERE ChatName = 'Test Chat');
+# CALL AddUserToChat(@ChatID, @AdminUserID, 'admin', @AdminUserID);
+# CALL AddUserToChat(@ChatID, @UserIDToUpdate, 'member', @AdminUserID);
+#
+# -- Перевіряємо, чи користувачі додані до чату
+# SELECT * FROM ChatMembers WHERE ChatId = @ChatID;
+
 -- Додаємо повідомлення до чату
-SET @ChatID = (SELECT ChatID FROM Chats WHERE ChatName = 'Test Chat');
 CALL AddMessage(@ChatID, @AdminUserID, 'Hello, this is a test message.', @AdminUserID);
 
 -- Перевіряємо, чи повідомлення додано
@@ -89,7 +96,6 @@ SELECT UserId, StatusMessage FROM UserStatus WHERE UserId = @UserStatusID;
 -- Завершуємо
 SELECT 'Перевірки завершені.' AS Status;
 
-
 -- Тестування функцій CountMessagesInChat та IsUserInChat
 
 -- 11. Використовуємо CountMessagesInChat для перевірки кількості повідомлень у чаті
@@ -97,10 +103,8 @@ SET @MessageCount = CountMessagesInChat(@ChatID);
 SELECT @MessageCount AS MessageCountInChat;
 
 -- 12. Додаємо користувача до чату та перевіряємо IsUserInChat
-INSERT INTO ChatMembers (ChatId, UserId) VALUES (@ChatID, 2);
-
--- Використовуємо IsUserInChat для перевірки, чи є користувач у чаті
-SET @IsUserInChat = IsUserInChat(2, @ChatID);
+-- (Використано раніше, тепер просто перевіряємо)
+SET @IsUserInChat = IsUserInChat(@AdminUserID, @ChatID);
 SELECT @IsUserInChat AS IsAdminInChat;
 
 -- Перевірка результатів функцій
