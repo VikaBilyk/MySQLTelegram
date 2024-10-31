@@ -1,10 +1,15 @@
 -- Файл процедур procedures.sql
-drop procedure if exists AddUser;
-drop procedure if exists DeleteUser;
-drop procedure if exists UpdateUser;
-drop procedure if exists AddMessage;
-drop procedure if exists DeleteMessage;
-drop procedure if exists AddChat;
+DROP PROCEDURE IF EXISTS AddUser;
+DROP PROCEDURE IF EXISTS DeleteUser;
+DROP PROCEDURE IF EXISTS UpdateUser;
+DROP PROCEDURE IF EXISTS AddMessage;
+DROP PROCEDURE IF EXISTS DeleteMessage;
+DROP PROCEDURE IF EXISTS AddChat;
+DROP PROCEDURE IF EXISTS AddUserToChat;
+DROP PROCEDURE IF EXISTS RemoveUserFromChat;
+DROP PROCEDURE IF EXISTS AddUserToGroup;
+DROP PROCEDURE IF EXISTS RemoveUserFromGroup;
+
 -- Процедура для додавання користувача
 DELIMITER //
 CREATE PROCEDURE AddUser (
@@ -30,7 +35,6 @@ BEGIN
     WHERE UserID = p_UserId;
 END //
 DELIMITER ;
-
 
 -- Процедура для оновлення інформації про користувача
 DELIMITER //
@@ -88,3 +92,51 @@ BEGIN
 END //
 DELIMITER ;
 
+-- Процедура для додавання користувача до чату
+DELIMITER //
+CREATE PROCEDURE AddUserToChat (
+    IN p_ChatId INT,
+    IN p_UserId INT,
+    IN p_Role VARCHAR(20),
+    IN p_ModifiedBy INT
+)
+BEGIN
+    INSERT INTO ChatMembers (ChatId, UserId, Role, LastModified, ModifiedBy)
+    VALUES (p_ChatId, p_UserId, p_Role, NOW(), p_ModifiedBy);
+END //
+DELIMITER ;
+
+-- Процедура для видалення користувача з чату
+DELIMITER //
+CREATE PROCEDURE RemoveUserFromChat (
+    IN p_ChatId INT,
+    IN p_UserId INT
+)
+BEGIN
+    DELETE FROM ChatMembers WHERE ChatId = p_ChatId AND UserId = p_UserId;
+END //
+DELIMITER ;
+
+-- Процедура для додавання учасника до групи
+DELIMITER //
+CREATE PROCEDURE AddUserToGroup (
+    IN p_GroupId INT,
+    IN p_UserId INT,
+    IN p_ModifiedBy INT
+)
+BEGIN
+    INSERT INTO GroupMembers (GroupId, UserId, LastModified, ModifiedBy)
+    VALUES (p_GroupId, p_UserId, NOW(), p_ModifiedBy);
+END //
+DELIMITER ;
+
+-- Процедура для видалення учасника з групи
+DELIMITER //
+CREATE PROCEDURE RemoveUserFromGroup (
+    IN p_GroupId INT,
+    IN p_UserId INT
+)
+BEGIN
+    DELETE FROM GroupMembers WHERE GroupId = p_GroupId AND UserId = p_UserId;
+END //
+DELIMITER ;
